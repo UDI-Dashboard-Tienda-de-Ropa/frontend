@@ -1,13 +1,10 @@
 <template>
-	<div>
-		<span>Hola</span>
-	</div>
+	<RouterView />
 </template>
 
 <script>
 	
 </script>
 
-<style>
-
+<style scoped>
 </style>
