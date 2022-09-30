@@ -4,7 +4,7 @@
       <Card style="width: 25rem; margin-bottom: 2em">
         <template #title>
           <div class="flex justify-center">
-            Iniciar Sesión
+            Registrate
           </div>
         </template>
         <template #content>
@@ -15,11 +15,11 @@
             </div>
             <div class="flex flex-col">
               <span>Contraseña</span>
-              <Password v-model="user.password" toggleMask />
+              <InputText type="text" v-model="user.password"/>
             </div>
             <div class="flex justify-between">
-              <Button label="Registrate" class="p-button-help" @click="$router.push({ name: 'register'})"/>
-              <Button label="Ingresar" @click="login()"/>
+              <Button label="Ya tienes cuenta?" class="p-button-help" @click="$router.push({ name: 'login'})"/>
+              <Button label="Registrarme" @click="register()"/>
             </div>
           </div>
         </template>
@@ -30,12 +30,12 @@
 
 <script>
 import { ref } from 'vue'
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from "vue-router";
-import Swal from "sweetalert2";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import Swal from 'sweetalert2'
+import { useRouter } from 'vue-router'
 
 export default {
-  name: 'login',
+  name: 'register',
   setup() {
     const auth = getAuth();
     const router = useRouter()
@@ -45,11 +45,11 @@ export default {
       password: ''
     })
 
-    const login = () => {
-      signInWithEmailAndPassword(auth, user.value.email, user.value.password)
+    const register = () => {
+      createUserWithEmailAndPassword(auth, user.value.email, user.value.password)
           .then((userCredential) => {
             const user = userCredential.user;
-            console.log('userCredential', userCredential)
+            console.log('userCredential', userCredential, 'user', user)
             router.push({ name: 'home' })
           })
           .catch((error) => {
@@ -59,12 +59,6 @@ export default {
               Swal.fire(
                   'Error',
                   'El email o la contraseña no es valido',
-                  'error'
-              )
-            } else if (errorCode === 'auth/wrong-password') {
-              Swal.fire(
-                  'Error',
-                  'Contraseña incorrecta',
                   'error'
               )
             } else {
@@ -80,17 +74,13 @@ export default {
 
     return {
       user,
-      login
+      register
     }
   }
 }
 </script>
 
 <style scoped>
-::v-deep(.p-inputtext) {
-  width: 100%;
-}
-
 #template {
   background: url("https://i.imgur.com/HgflTDf.jpg");
   min-height: 100vh;
