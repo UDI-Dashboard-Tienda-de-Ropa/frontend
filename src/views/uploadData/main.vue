@@ -5,7 +5,7 @@
       <Button label="Cargar Plantilla" @click="uploadFile()"/>
     </div>
     <div class="box p-4">
-      <DataTable :value="products" responsiveLayout="scroll" class="text-sm">
+      <DataTable :value="rows" responsiveLayout="scroll" class="text-sm">
         <Column field="code" header="Code"></Column>
         <Column field="name" header="Name"></Column>
         <Column field="category" header="Category"></Column>
@@ -13,12 +13,25 @@
       </DataTable>
     </div>
   </div>
+
+  <input type="file"
+         ref="cargarPlantilla"
+         id="cargarPlantilla"
+         accept=".xlsx,.csv"
+         @change="onUpload($event.target)"
+         class="hidden"/>
 </template>
 
 <script>
+import { ref } from 'vue'
+import { read, utils, writeFileXLSX } from 'xlsx';
+
 export default {
   name: "uploadDataMain",
   setup() {
+    const cargarPlantilla = ref()
+    const rows = ref([])
+
     const products = [
       {
         code: "1000",
@@ -35,17 +48,35 @@ export default {
     ]
 
     const uploadFile = () => {
-      alert('En proceso')
+      cargarPlantilla.value.click()
+    }
+
+    const onUpload = async (event) => {
+      const plantilla = await event.files[0].arrayBuffer();
+
+      /* parse workbook */
+      const wb = read(plantilla);
+
+      /* update data */
+      rows.value = utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      console.log(rows.value)
+      document.getElementById('cargarPlantilla').value = ''
     }
 
     const downloadFile = () => {
-      window.open("/plantilla.xlsx", "_blank");
+      const ws = utils.json_to_sheet(products);
+      const wb = utils.book_new();
+      utils.book_append_sheet(wb, ws, "Plantilla");
+      writeFileXLSX(wb, "Plantilla.xlsx");
     }
 
     return {
       products,
+      cargarPlantilla,
+      rows,
       uploadFile,
-      downloadFile
+      downloadFile,
+      onUpload
     }
   }
 }
