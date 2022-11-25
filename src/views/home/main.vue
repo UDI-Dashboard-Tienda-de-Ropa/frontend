@@ -20,7 +20,7 @@
               </svg>
               <span>Dashboard</span>
             </li>
-            <li class="flex gap-4" :class="$route.name === 'home.uploadData' ? 'active' : ''" @click="actionMenu('home.uploadData')">
+            <li v-if="user.rol === 3 || user.rol === 1" class="flex gap-4" :class="$route.name === 'home.uploadData' ? 'active' : ''" @click="actionMenu('home.uploadData')">
               <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" preserveAspectRatio="xMidYMid meet"
                    viewBox="0 0 32 32">
                 <path fill="currentColor" d="M26 21h-3v-3h-2v3h-3v2h3v3h2v-3h3z"/>
@@ -31,7 +31,7 @@
               </svg>
               <span>Cargar Datos</span>
             </li>
-            <li class="flex gap-4" :class="$route.name === 'home.users' ? 'active' : ''" @click="actionMenu('home.users')">
+            <li v-if="user.rol === 1" class="flex gap-4" :class="$route.name === 'home.users' ? 'active' : ''" @click="actionMenu('home.users')">
               <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" preserveAspectRatio="xMidYMid meet"
                    viewBox="0 0 24 24">
                 <path fill="white"
@@ -60,14 +60,17 @@
 import {getAuth, signOut, updateProfile} from "firebase/auth";
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import {useAuth} from "@/stores/auth.store";
 
 export default {
   name: "HomeMain",
   setup() {
     const auth = getAuth();
     const router = useRouter()
+    const useAuthStore = useAuth();
 
     const userLogged = computed(() => auth.currentUser)
+    const user = computed(() => useAuthStore.getUser)
 
     const logout = () => {
       signOut(auth).then(() => {
@@ -95,7 +98,8 @@ export default {
     return {
       userLogged,
       logout,
-      actionMenu
+      actionMenu,
+      user
     };
   }
 }

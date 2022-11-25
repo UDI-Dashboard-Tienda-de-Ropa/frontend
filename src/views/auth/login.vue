@@ -18,7 +18,7 @@
               <Password v-model="user.password" />
             </div>
             <div class="flex justify-between">
-              <Button label="Registrate" class="p-button-help" @click="$router.push({ name: 'register'})"/>
+              <Button label="Registrate" class="p-button-help" @click="$router.push({ name: 'register'})" v-if="false"/>
               <Button label="Ingresar" @click="login()"/>
             </div>
           </div>
@@ -49,7 +49,7 @@ export default {
       signInWithEmailAndPassword(auth, user.value.email, user.value.password)
           .then((userCredential) => {
             const user = userCredential.user;
-            console.log('userCredential', userCredential)
+            // console.log('userCredential', userCredential)
             router.push({ name: 'home' })
           })
           .catch((error) => {

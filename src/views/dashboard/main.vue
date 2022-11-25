@@ -5,18 +5,22 @@
   </div>
   <div class="flex flex-col gap-4 p-4">
     <div class="flex gap-4">
-      <div class="box w-1/2 p-4">
+      <div class="flex flex-col items-center box w-1/2 p-4">
+        <span class="font-bold text-xl">% Margen Bruto</span>
         <Chart ref="refPrimerGrafico" type="line" :data="primerGrafico" class="w-full"/>
       </div>
-      <div class="box w-1/2 p-4">
+      <div class="flex flex-col items-center box w-1/2 p-4">
+        <span class="font-bold text-xl">Inventario Promedio</span>
         <Chart ref="refSegundoGrafico" type="bar" :data="segundoGrafico" class="w-full"/>
       </div>
     </div>
     <div class="flex gap-4">
-      <div class="box w-1/2 p-4">
+      <div class="flex flex-col items-center box w-1/2 p-4">
+        <span class="font-bold text-xl">Top 3 Productos mas vendidos</span>
         <Chart ref="refTercerGrafico" type="line" :data="tercerGrafico" class="w-full"/>
       </div>
-      <div class="box w-1/2 p-4">
+      <div class="flex flex-col items-center box w-1/2 p-4">
+        <span class="font-bold text-xl">Porcentaje Global de Ventas</span>
         <Chart ref="refCuartoGrafico" type="pie" :data="cuartoGrafico" class="w-full"/>
       </div>
     </div>
