@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useAuth } from "../stores/auth.store";
+import { useAuth } from "@/stores/auth.store";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +29,14 @@ const router = createRouter({
                     meta: {
                         requiresAuth: true
                     }
+                },
+                {
+                    path: 'users',
+                    name: 'home.users',
+                    component: () => import('../views/users/main.vue'),
+                    meta: {
+                        requiresAuth: true
+                    }
                 }
             ]
         },
@@ -52,8 +60,13 @@ const getCurrentUser = () => {
             getAuth(),
             (user) => {
                 removeListener();
-                useAuthStore.storeUser(user);
-                resolve(user);
+                useAuthStore.actionGetUser(user.uid).then((data) => {
+                    useAuthStore.storeUser({
+                        user,
+                        ...data
+                    });
+                    resolve(user);
+                })
             },
             reject
         )

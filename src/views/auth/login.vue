@@ -15,7 +15,7 @@
             </div>
             <div class="flex flex-col">
               <span>Contraseña</span>
-              <Password v-model="user.password" toggleMask />
+              <Password v-model="user.password" />
             </div>
             <div class="flex justify-between">
               <Button label="Registrate" class="p-button-help" @click="$router.push({ name: 'register'})"/>

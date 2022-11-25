@@ -15,7 +15,7 @@
             </div>
             <div class="flex flex-col">
               <span>Contraseña</span>
-              <InputText type="text" v-model="user.password"/>
+              <InputText type="password" v-model="user.password"/>
             </div>
             <div class="flex justify-between">
               <Button label="Ya tienes cuenta?" class="p-button-help" @click="$router.push({ name: 'login'})"/>
@@ -47,9 +47,9 @@ export default {
 
     const register = () => {
       createUserWithEmailAndPassword(auth, user.value.email, user.value.password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            console.log('userCredential', userCredential, 'user', user)
+          // .then((userCredential) => {
+          .then(() => {
+            // const user = userCredential.user;
             router.push({ name: 'home' })
           })
           .catch((error) => {

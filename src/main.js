@@ -21,6 +21,8 @@ import Calendar from 'primevue/calendar';
 import Dropdown from 'primevue/dropdown';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-_Mv6q4nDouEHeFyY_qIwp70nH6rNGoU",
@@ -46,6 +48,8 @@ app.component('Calendar', Calendar);
 app.component('Dropdown', Dropdown);
 app.component('DataTable', DataTable);
 app.component('Column', Column);
+app.component('Dialog', Dialog);
+app.component('ProgressSpinner', ProgressSpinner);
 
 app.use(createPinia())
 app.use(router)

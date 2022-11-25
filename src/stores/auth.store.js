@@ -1,27 +1,40 @@
 import { defineStore } from "pinia";
-// import MedicamentosService from "../services/medicamentos.service";
+import UsersService from "@/views/users/services/Users.service";
 
-// const _MedicamentosService = new MedicamentosService();
+const _UsersService = new UsersService()
 
 export const useAuth = defineStore({
     id: "useAuth",
     state: () => ({
-        // listMedicamentos: [],
-        user: {}
+        user: {},
+        users: []
     }),
     getters: {
-        // getListMedicamentos: (state) => state.listMedicamentos,
-        getUser: (state) => state.user
+        getUser: (state) => state.user,
+        getUsers: (state) => state.users
     },
     actions: {
-        // storeGetSearch(payload = {}) {
-        //     return _MedicamentosService.getSearch(payload).then(({ data }) => {
-        //         this.listMedicamentos = data;
-        //         return true;
-        //     });
-        // },
         storeUser (payload = {}) {
             this.user = payload;
+        },
+        saveUser (payload = {}) {
+            return _UsersService.post(payload)
+        },
+        actionGetUsers () {
+            _UsersService.get().then(({ data }) => {
+                this.users = data
+            })
+        },
+        actionGetUser (uid) {
+            return _UsersService.findByUid(uid).then(({ data }) => {
+                return data
+            })
+        },
+        actionDeleteUser (id) {
+            return _UsersService.delete(id)
+        },
+        actionUpdateUser (id, payload) {
+            return _UsersService.put(id, payload)
         }
     },
 });

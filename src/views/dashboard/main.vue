@@ -1,81 +1,121 @@
 <template>
   <div class="flex gap-4 p-4">
-    <Dropdown v-model="dateType" :options="dateTypes" optionLabel="name" optionValue="value" @change="dateTypeChange()"/>
-    <Calendar v-if="dateType === 'month'" v-model="date" view="month" dateFormat="mm/yy" @date-select="search()"/>
-    <Calendar v-else v-model="date" view="year" dateFormat="yy" @date-select="search()"/>
-    <Button label="Buscar" @click="search()"/>
+    <Calendar input-id="fecha" v-model="date" view="year" dateFormat="yy" @date-select="search()"/>
+    <!--    <Button label="Buscar" @click="search()"/>-->
   </div>
   <div class="flex flex-col gap-4 p-4">
     <div class="flex gap-4">
       <div class="box w-1/2 p-4">
-        <Chart type="bar" :data="basicData" class="w-full"/>
+        <Chart ref="refPrimerGrafico" type="line" :data="primerGrafico" class="w-full"/>
       </div>
       <div class="box w-1/2 p-4">
-        <Chart type="line" :data="basicData" class="w-full"/>
+        <Chart ref="refSegundoGrafico" type="bar" :data="segundoGrafico" class="w-full"/>
       </div>
     </div>
     <div class="flex gap-4">
       <div class="box w-1/2 p-4">
-        <Chart type="pie" :data="basicData" class="w-full"/>
+        <Chart ref="refTercerGrafico" type="line" :data="tercerGrafico" class="w-full"/>
       </div>
       <div class="box w-1/2 p-4">
-        <Chart type="doughnut" :data="basicData" class="w-full"/>
+        <Chart ref="refCuartoGrafico" type="pie" :data="cuartoGrafico" class="w-full"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import dayjs from 'dayjs'
+import DashboardService from "./services/Dashboard.service";
 
 export default {
   name: "DashboardMain",
-  setup () {
-    const calendar = ref()
+  setup() {
+    const refPrimerGrafico = ref()
+    const refSegundoGrafico = ref()
+    const refTercerGrafico = ref()
+    const refCuartoGrafico = ref()
+    const _DashboardService = new DashboardService()
     const dateType = ref('month')
-    const date = ref(dayjs().format('MM/YYYY'))
-    const basicData = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label: 'My First dataset',
-          backgroundColor: '#42A5F5',
-          data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-          label: 'My Second dataset',
-          backgroundColor: '#9CCC65',
-          data: [28, 48, 40, 19, 86, 27, 90]
-        }
-      ]
-    }
-    const dateTypes = [
-      {name: 'Mes', value: 'month'},
-      {name: 'Año', value: 'year'}
-    ]
+    const date = ref(dayjs().format('YYYY'))
 
     const search = () => {
-      // console.log('date', dayjs(date.value).format('YYYY-MM'))
-      console.log('date', calendar.value)
+      document.getElementById("fecha").blur();
+      _DashboardService.getMargenBruto(dayjs(date.value).format('YYYY'))
+          .then(({data}) => {
+            const chart = refPrimerGrafico.value.chart
+            chart.data.datasets[0].data = data
+            chart.update()
+          })
+
+      _DashboardService.getPromedioInventario(dayjs(date.value).format('YYYY'))
+          .then(({data}) => {
+            const chart = refSegundoGrafico.value.chart
+            chart.data.datasets[0].data = data.arrayResult
+            chart.data.labels = data.arrayLabels
+            chart.update()
+          })
+
+      _DashboardService.getTopTres(dayjs(date.value).format('YYYY'))
+          .then(({data}) => {
+            const chart = refTercerGrafico.value.chart
+            chart.data.datasets = data
+            chart.update()
+          })
+
+      _DashboardService.getVendidosPorcentaje(dayjs(date.value).format('YYYY'))
+          .then(({data}) => {
+            const chart = refCuartoGrafico.value.chart
+            chart.data.datasets[0].data = data.porcentajeIndividual
+            chart.data.labels = data.labels
+            chart.update()
+          })
     }
 
-    const dateTypeChange = () => {
-      if (dateType.value === 'month') {
-        date.value = dayjs().format('MM/YYYY')
-      } else {
-        date.value = dayjs().format('YYYY')
-      }
-    }
+    onMounted(() => {
+      search()
+    })
 
     return {
-      calendar,
-      basicData,
       date,
       dateType,
-      dateTypes,
       search,
-      dateTypeChange
+      refPrimerGrafico,
+      refSegundoGrafico,
+      refTercerGrafico,
+      refCuartoGrafico,
+      primerGrafico: {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        datasets: [
+          {
+            label: '% Margen Bruto',
+            backgroundColor: '#42A5F5',
+            data: []
+          }
+        ]
+      },
+      segundoGrafico: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Inventario promedio',
+            backgroundColor: ['#3E6B72', '#19C76B', '#1ECCD4', '#E557E0', '#6FE4B9', '#5E0A10', '#53D42E'],
+            data: []
+          }
+        ]
+      },
+      tercerGrafico: {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      },
+      cuartoGrafico: {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            backgroundColor: ['#3E6B72', '#19C76B', '#1ECCD4', '#E557E0', '#6FE4B9', '#5E0A10', '#53D42E'],
+          }
+        ]
+      }
     }
   }
 }
